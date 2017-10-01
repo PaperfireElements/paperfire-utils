@@ -1,0 +1,69 @@
+<link rel="import" href="../polymer/polymer-element.html">
+
+<dom-module id="firebase-once">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <h2>Hello [[prop1]]!</h2>
+  </template>
+
+  <script>
+    /**
+     * `paperfire-utils`
+     * A collection of firebase helpers
+     *
+     * @customElement
+     * @polymer
+     * @demo demo/index.html
+     */
+    class FirebaseOnce extends Polymer.Element {
+      static get is() { return 'firebase-once'; }
+      static get properties() {
+        return {
+          // Firebase Data
+          data: {
+            type: Object,
+            notify: true
+          },
+          // Firebase endAt query
+          endAt: String,
+          // Firebase equalTo query
+          equalTo: String,
+          // Key for firebase data
+          key: {
+            type: String,
+            notify: true
+          },
+          // Firebase once has resolved
+          loaded: {
+            type: Boolean,
+            notify: true
+          },
+          // Firebase query orderByKey
+          orderByChild: String,
+          // Firebase query orderByKey
+          orderByKey: Boolean,
+          // Path to firebase data
+          path: {
+            type: String,
+            observer: '_watchPath'
+          },
+          // Firebase ref
+          _ref: Object
+        };
+      }
+
+      _watchPath(path) {
+        const vm = this;
+        if (path && typeof path === 'string') {
+          this.set('_ref', firebase.database().ref(path));
+        }
+      }
+    }
+
+    window.customElements.define(FirebaseOnce.is, FirebaseOnce);
+  </script>
+</dom-module>

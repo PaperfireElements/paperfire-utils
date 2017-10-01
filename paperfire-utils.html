@@ -1,0 +1,36 @@
+<link rel="import" href="../polymer/polymer-element.html">
+
+<dom-module id="paperfire-utils">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <h2>Hello [[prop1]]!</h2>
+  </template>
+
+  <script>
+    /**
+     * `paperfire-utils`
+     * A collection of firebase helpers
+     *
+     * @customElement
+     * @polymer
+     * @demo demo/index.html
+     */
+    class PaperfireUtils extends Polymer.Element {
+      static get is() { return 'paperfire-utils'; }
+      static get properties() {
+        return {
+          prop1: {
+            type: String,
+            value: 'paperfire-utils'
+          }
+        };
+      }
+    }
+
+    window.customElements.define(PaperfireUtils.is, PaperfireUtils);
+  </script>
+</dom-module>

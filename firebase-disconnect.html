@@ -1,0 +1,73 @@
+<link rel="import" href="../polymer/polymer-element.html">
+
+<dom-module id="firebase-disconnect">
+  <script>
+    /**
+     * `firebase-disconnect`
+     * A collection of firebase helpers
+     *
+     * @customElement
+     * @polymer
+     * @demo demo/index.html
+     */
+    class FirebaseDisconnect extends Polymer.Element {
+      static get is() { return 'firebase-disconnect'; }
+      static get properties() {
+        return {
+          // True if onDisconnect has been canceled
+          canceled: {
+            type: Boolean,
+            value: false,
+            notify: true
+          },
+          // Path for firebase ref to add onDisconnect to
+          path: String,
+          // True is user is online
+          online: {
+            type: Boolean,
+            notify: true,
+            value: false
+          },
+          // Object to update at path when offline
+          updateDisconnect: Object,
+          // Object to update at path initially 
+          updateOnline: Object,
+          _onDisconnect: Object
+          
+        };
+      }
+
+      ready() {
+        super.ready();
+        this.init();
+      }
+
+      cancel() {
+        this._onDisconnect.cancel();
+        this.set('canceled', true);
+      }
+
+      init() {
+        const vm = this;
+        if (!this.path) {
+          return;
+        }
+        const ref = firebase.database().ref(this.path);
+        if (this.updateOnline) {
+          ref.update(this.updateOnline).then(() => {
+            vm.set('online', true);
+          });
+        }
+
+        if (this.updateDisconnect) {
+          this._onDisconnect = ref.onDisconnect();
+          this._onDisconnect.update(this.updateDisconnect).then(() => {
+            vm.set('online', false);
+          });
+        }
+      }
+    }
+
+    window.customElements.define(FirebaseDisconnect.is, FirebaseDisconnect);
+  </script>
+</dom-module>

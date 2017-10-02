@@ -1,7 +1,7 @@
 {
   "name": "paperfire-utils",
   "description": "A collection of firebase helpers",
-  "main": "paperfire-utils.html",
+  "main": "firebase-once.html",
   "dependencies": {
     "polymer": "Polymer/polymer#^2.0.0"
   },

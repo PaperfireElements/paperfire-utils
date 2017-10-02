@@ -3,7 +3,7 @@
 <dom-module id="firebase-once">
   <template>
     <style>
-      :host {
+       :host {
         display: block;
       }
     </style>
@@ -20,47 +20,140 @@
      * @demo demo/index.html
      */
     class FirebaseOnce extends Polymer.Element {
-      static get is() { return 'firebase-once'; }
+      static get is() {
+        return 'firebase-once';
+      }
       static get properties() {
         return {
-          // Firebase Data
+          // Child path to check
+          checkChildPath: String,
+
+          // Firebase Data at path
           data: {
             type: Object,
+            value: () => {
+              return {};
+            },
             notify: true
           },
-          // Firebase endAt query
-          endAt: String,
-          // Firebase equalTo query
-          equalTo: String,
+
+          //True if firebase data exists at `path` or `firebaseRef`
+          exists: {
+            type: Boolean,
+            value: false,
+            notify: true
+          },
+
+          // If firebase queries are required pass firebase ref here instead using path
+          firebaseRef: Object,
+
+          // True if snapshot has child with matching path passed to `checkChildPath`
+          hasChild: {
+            type: Boolean,
+            notify: true
+          },
+
+          // True if snapshot has children
+          hasChildren: {
+            type: Boolean,
+            notify: true
+          },
+
           // Key for firebase data
           key: {
             type: String,
             notify: true
           },
+
           // Firebase once has resolved
           loaded: {
             type: Boolean,
+            value: false,
             notify: true
           },
-          // Firebase query orderByKey
-          orderByChild: String,
-          // Firebase query orderByKey
-          orderByKey: Boolean,
-          // Path to firebase data
-          path: {
-            type: String,
-            observer: '_watchPath'
+
+          // True is fetching data
+          loading: {
+            type: Boolean,
+            value: true,
+            notify: true
           },
+
+          // Number of children at firebase location
+          numChildren: {
+            type: Number,
+            notify: true
+          },
+
+          // Path to firebase data
+          path: String,
+
           // Firebase ref
-          _ref: Object
+          _ref: {
+            type: Object,
+            computed: '_watchPath(path, firebaseRef)',
+            observer: '_watchRef'
+          }
         };
       }
 
-      _watchPath(path) {
-        const vm = this;
+      refresh() {
+        this.set('loading', true);
+        this._getData(this._ref, this);
+      }
+
+      _getData(ref, vm) {
+        ref.once('value', (snap) => {
+          let details = {
+            data: snap.val(),
+            exists: snap.exists(),
+            hasChildren: snap.hasChildren(),
+            key: snap.key,
+            numChildren: snap.numChildren()
+          };
+          vm.set('data', details.data);
+          vm.set('exists', details.exists);
+          vm.set('hasChildren', details.hasChildren);
+          vm.set('key', details.key);
+          vm.set('loaded', true);
+          vm.set('loading', false);
+          vm.set('numChildren', details.numChildren);
+          if (!!vm.checkChildPath) {
+            vm.set('hasChild', snap.hasChild(vm.checkChildPath));
+            details[hasChild] = snap.hasChild(vm.checkChildPath);
+          }
+          /**
+           * Fired when `firebase-once` receives a new snapshot.
+           *
+           * @event firebase-once
+           * @param {object} data the val() of the snapshot.
+           * @param {boolean} exists the result of snapshot.exists()
+           * @param {boolean} hasChildren the result of snapshot.hasChildren()
+           * @param {string} key the result of snapshot.key
+           * @param {number} numChildren the result of snapshot.numChildren()
+           * @param {boolean} hasChild the result of snapshot.hasChild(). Only used if element property `checkChildPath` is set
+           */
+          vm.dispatchEvent(new CustomEvent('firebase-once', {
+            detail: details,
+            bubbles: true,
+            composed: true
+          }))
+        });
+      }
+
+      _watchPath(path, ref) {
         if (path && typeof path === 'string') {
-          this.set('_ref', firebase.database().ref(path));
+          return firebase.database().ref(path);
+        } else if (ref) {
+          return ref;
+        } else {
+          return null;
         }
+      }
+
+      _watchRef(ref) {
+        this.set('loading', true);
+        this._getData(ref, this);
       }
     }
 

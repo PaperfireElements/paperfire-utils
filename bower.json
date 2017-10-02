@@ -1,5 +1,6 @@
 {
   "name": "paperfire-utils",
+  "version": "v1.0.0",
   "description": "A collection of firebase helpers",
   "main": "firebase-once.html",
   "dependencies": {

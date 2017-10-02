@@ -1,6 +1,25 @@
+[![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg?style=flat-square)](https://www.webcomponents.org/element/PaperfireElements/paperfire-utils)
+
 # \<paperfire-utils\>
 
-A collection of firebase helpers
+A collection of firebase helpers. Requires firebase to have been initialized and available.
+
+<!--
+```
+<custom-element-demo>
+  <template>
+    <link rel="import" href="firebase-diconnect.html">
+    <link rel="import" href="firebase-once.html">
+    <next-code-block></next-code-block>
+  </template>
+</custom-element-demo>
+```
+-->
+```html
+<pre>This isn't using live data yet</pre>
+<firebase-disconnect path="demo/paperfire-utils/disconnect" update-online="onlineObject" update-disconnect="offlineObject"></firebase-disconnect>
+<firebase-once path="demo/paperfire-utils/once" exists="{{exists}}"></firebase-once>
+```
 
 ## Install the Polymer-CLI
 
